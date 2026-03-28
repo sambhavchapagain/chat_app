@@ -1,30 +1,37 @@
 
+import 'package:chatapp/presentation/screens/auth/home_screen.dart';
+import 'package:chatapp/presentation/screens/splash/splash_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../presentation/screens/auth/login_screen.dart';
+import '../../presentation/screens/auth/signup_screen.dart';
 
 
 class AppRouter {
   static final GoRouter _router = GoRouter(
-    initialLocation: '/login',
+    initialLocation: '/splash',
     routes: [
       GoRoute(
         path: '/login',
         name: 'login',
         builder: (context, state) => const LoginScreen(),
       ),
-      // GoRoute(
-      //   path: '/home',
-      //   name: 'home',
-      //   builder: (context, state) => const HomeScreen(), // Replace with your home
-      // ),
-      // Add more routes
-      // GoRoute(
-      //   path: '/profile',
-      //   name: 'profile',
-      //   builder: (context, state) => const ProfileScreen(),
-      // ),
+      GoRoute(
+        path: '/home',
+        name: 'home',
+        builder: (context, state) => const HomeScreen(), // Replace with your home
+      ),
+
+      GoRoute(
+        path: '/signup',
+        name: 'signup',
+        builder: (context, state) => const SignupScreen(),
+      ),
+      GoRoute(path: '/splash',
+      name: 'splash',
+      builder: (context, state) => const SplashScreen(),)
     ],
     // Optional: Error handling
     errorBuilder: (context, state) => Scaffold(
@@ -32,6 +39,17 @@ class AppRouter {
     ),
     // Optional: Redirect (e.g., if logged in, skip login)
     redirect: (context, state) {
+      final isLoggedIn = FirebaseAuth.instance.currentUser != null;
+      final path = state.uri.path;
+      final isAuthPage = path == '/login' || path == '/signup';
+      final isSplash = path == '/splash';
+
+
+      if (isLoggedIn && isAuthPage) return '/home';
+      if (isLoggedIn && isSplash) return '/home';
+
+
+
       // Add auth logic: final bool isLoggedIn = ...;
       // if (isLoggedIn && state.uri.toString() == '/login') return '/home';
       return null;

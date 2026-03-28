@@ -1,20 +1,56 @@
 import 'package:chatapp/core/constants/app_string.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart'; // Import the colors class
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../../logic/blocs/auth/auth_bloc.dart';
+import '../../widgets/custom_loading_widget.dart'; // Import the colors class
 
 
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailController  = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+
+  @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      
-      body: SafeArea(
-        child: Padding(
+
+      body: BlocListener<AuthBloc, AuthState>(
+  listener: (context, state) {
+    if(state.authStatus == AuthStatus.authenticated){
+   return   context.goNamed('home');
+
+    }
+    if(state.authStatus == AuthStatus.loading){
+      customLoadingWidget(context: context);
+
+    }
+    if(state.authStatus == AuthStatus.unauthenticated){
+      context.pop();
+
+    }
+  },
+  child: SafeArea(child:Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -28,7 +64,7 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 48),
-              TextField(
+              TextField(controller: _emailController,
                 decoration: InputDecoration(
                   hintText:AppStrings.enterEmailHint,
                   hintStyle: TextStyle(color: AppColors.grey500),
@@ -51,8 +87,13 @@ class LoginScreen extends StatelessWidget {
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 16),
-              TextField(
-                obscureText: true,
+              TextField(controller: _passwordController,
+                obscureText: _obscurePassword,
+                onChanged: (value) {
+                  setState(() {
+                    _obscurePassword = value.isEmpty;
+                  });
+                },
                 decoration: InputDecoration(
                   hintText: AppStrings.passwordHint,
                   suffixIcon: Icon(Icons.visibility_off, color: AppColors.grey400),
@@ -94,7 +135,9 @@ class LoginScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    context.read<AuthBloc>().add(EmailSignInRequested(email:_emailController.text.trim(), password:_passwordController.text.trim()));
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryBlue,
                     foregroundColor: AppColors.white,
@@ -107,6 +150,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
               ),
+
               const SizedBox(height: 24),
               _SocialButton(
                 icon: Image.asset('assets/images/apple_logo.png', height: 24, width: 24),
@@ -117,12 +161,16 @@ class LoginScreen extends StatelessWidget {
               _SocialButton(
                 icon: Image.asset('assets/images/google_logo.png', height: 24, width: 24),
                 text: 'Login with Google',
-                onPressed: () {},
+                onPressed: () {context.read<AuthBloc>().add(GoogleSignInRequested());
+
+                },
               ),
               const Spacer(),
               Center(
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    context.goNamed("signup");
+                  },
                   child: RichText(
                     text: TextSpan(
                       style: TextStyle(color: AppColors.grey600, fontSize: 16),
@@ -143,9 +191,8 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(height: 32),
             ],
           ),
-        ),
-      ),
-    );
+        ))));
+
   }
 }
 

@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Backgr
   static const Color background = Color(0xFFF5F7FA);
 
   // Primary Blue

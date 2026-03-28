@@ -1,10 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/router/app_router.dart';
-import 'core/theme/app_theme.dart';
 import 'data/repositories/auth_repositories.dart';
 import 'data/repositories/user_repositories.dart';
 import 'data/serivices/fcm_services.dart';
@@ -33,6 +31,7 @@ class ChatApp extends StatelessWidget {
         routerConfig: AppRouter.router,
         // theme: AppTheme.light,
         // darkTheme: AppTheme.dark,
+        debugShowCheckedModeBanner: false,
       ),
     );
   }

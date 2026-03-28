@@ -1,6 +1,7 @@
 // lib/core/constants/app_string.dart
 class AppStrings {
   static const String loginTitle = 'Log in';
+  static const String enternameHint = 'Enter your full name';
   static const String enterEmailHint = 'Enter your email';
   static const String passwordHint = 'Password';
   static const String forgotPassword = 'Forgot password?';
