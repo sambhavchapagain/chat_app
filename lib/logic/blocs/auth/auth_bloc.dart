@@ -1,15 +1,17 @@
-import 'package:bloc/bloc.dart';
-import 'package:chatapp/data/repositories/auth_repositories.dart';
+
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../data/serivices/firebase_auth_services.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final AuthRepositories _authRepositories;
+  final AuthService _authService;
 
-  AuthBloc(this._authRepositories) : super(const AuthState()) {
+  AuthBloc(this._authService) : super(const AuthState()) {
     on<GoogleSignInRequested>(_onGoogleSignIn);
     on<EmailSignInRequested>(_onEmailSignIn);
     on<EmailSignUpRequested>(_onEmailSignUp);
@@ -25,7 +27,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       ) async {
     emit(state.copyWith(authStatus: AuthStatus.loading));
     try {
-      final credential = await _authRepositories.signInWithGoogle();
+      final credential = await _authService.signInWithGoogle();
       if(credential != null) {
         emit(state.copyWith(
         authStatus: AuthStatus.authenticated,
@@ -52,7 +54,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       ) async {
     emit(state.copyWith(authStatus: AuthStatus.loading));
     try {
-      final credential = await _authRepositories.signInWithEmail(
+      final credential = await _authService.signInWithEmail(
         email: event.email,
         password: event.password,
       );
@@ -67,14 +69,65 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           authStatus: AuthStatus.unauthenticated));
 
       }
-    } catch (e) {
+    }  on FirebaseAuthException catch (e) {
+      emit(state.copyWith(
+        authStatus: AuthStatus.error,
+        errorMessage: _handleFirebaseError(e.code),
+      ));
+
+    }catch (e) {
       emit(state.copyWith(
         authStatus: AuthStatus.error,
         errorMessage: e.toString(),
       ));
     }
   }
+  String _handleFirebaseError(String code) {
+    switch (code) {
+    // ── Login errors ─────────────────────────────────────────────────
+      case 'user-not-found':
+        return 'No account found with this email';
+      case 'wrong-password':
+        return 'Incorrect password. Please try again';
+      case 'invalid-credential':
+        return 'Invalid email or password';
+      case 'invalid-email':
+        return 'Please enter a valid email address';
+      case 'user-disabled':
+        return 'This account has been disabled';
 
+    // ── Register errors ──────────────────────────────────────────────
+      case 'email-already-in-use':
+        return 'An account already exists with this email';
+      case 'weak-password':
+        return 'Password must be at least 6 characters';
+      case 'operation-not-allowed':
+        return 'This sign-in method is not enabled';
+
+    // ── Google errors ────────────────────────────────────────────────
+      case 'account-exists-with-different-credential':
+        return 'Account exists with a different sign-in method';
+      case 'popup-closed-by-user':
+        return 'Sign-in cancelled';
+
+    // ── Network errors ───────────────────────────────────────────────
+      case 'network-request-failed':
+        return 'No internet connection. Please check your network';
+      case 'too-many-requests':
+        return 'Too many attempts. Please try again later';
+      case 'timeout':
+        return 'Request timed out. Please try again';
+
+    // ── Token errors ─────────────────────────────────────────────────
+      case 'expired-action-code':
+        return 'This link has expired. Please request a new one';
+      case 'invalid-action-code':
+        return 'This link is invalid. Please request a new one';
+
+      default:
+        return 'Something went wrong. Please try again';
+    }
+  }
   // ── Sign Out ──────────────────────────────────────────────────────────
   Future<void> _onSignOut(
       SignOutRequested event,
@@ -82,7 +135,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       ) async {
     emit(state.copyWith(logoutStatus: LogoutStatus.loading));
     try {
-      await _authRepositories.signOut();
+      await _authService.signOut();
       emit(state.copyWith(
         logoutStatus: LogoutStatus.logoutSucess,
         value: null,
@@ -101,7 +154,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AuthCheckRequested event,
       Emitter<AuthState> emit,
       ) async {
-    final user = _authRepositories.currentUser;
+    final user = _authService.currentUser;
     if (user != null) {
       emit(state.copyWith(authStatus: AuthStatus.authenticated));
     } else {
@@ -109,16 +162,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  // ── Firebase error messages (user-friendly) ───────────────────────────
-  String _mapFirebaseError(String error) {
-    if (error.contains('user-not-found'))    return 'No account found with this email';
-    if (error.contains('wrong-password'))    return 'Incorrect password';
-    if (error.contains('email-already-in-use')) return 'Email already registered';
-    if (error.contains('weak-password'))     return 'Password must be at least 6 characters';
-    if (error.contains('invalid-email'))     return 'Invalid email address';
-    if (error.contains('network-request-failed')) return 'No internet connection';
-    return 'Something went wrong. Please try again';
-  }
+
 
 Future<void> _onEmailSignUp(
       EmailSignUpRequested event,
@@ -126,7 +170,7 @@ Future<void> _onEmailSignUp(
       ) async {
     emit(state.copyWith(authStatus: AuthStatus.loading));
     try {
-      final credential = await _authRepositories.signUpWithEmail(
+      final credential = await _authService.signUpWithEmail(
         email: event.email,
         password: event.password,
         displayName: event.displayName,
@@ -135,7 +179,13 @@ Future<void> _onEmailSignUp(
         authStatus: AuthStatus.authenticated,
         value: credential,
       ));
-    } catch (e) {
+    }on FirebaseException catch(e){
+      emit(state.copyWith(
+        authStatus: AuthStatus.error,
+        errorMessage: _handleFirebaseError(e.code)
+      ));
+    }
+    catch (e) {
       emit(state.copyWith(
         authStatus: AuthStatus.error,
     ));
@@ -149,7 +199,7 @@ Future<void> _onEmailSignUp(
       ) async {
     emit(state.copyWith(authStatus: AuthStatus.loading));
     try {
-      await _authRepositories.sendPasswordResetEmail(email: event.email);
+      await _authService.sendPasswordResetEmail(email: event.email);
       emit(state.copyWith(
         authStatus: AuthStatus.unauthenticated,
         errorMessage: 'Password reset email sent',  // used as success msg
@@ -157,6 +207,7 @@ Future<void> _onEmailSignUp(
     } catch (e) {
       emit(state.copyWith(
         authStatus: AuthStatus.error,
+        errorMessage: e.toString(),
       ));
     }
   }

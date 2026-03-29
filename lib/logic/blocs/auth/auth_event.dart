@@ -6,7 +6,6 @@ sealed class AuthEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }
-
 class GoogleSignInRequested extends AuthEvent {
   const GoogleSignInRequested();
 }
@@ -20,7 +19,6 @@ class EmailSignInRequested extends AuthEvent {
   @override
   List<Object?> get props => [email, password];
 }
-
 class EmailSignUpRequested extends AuthEvent {
   final String email;
   final String password;

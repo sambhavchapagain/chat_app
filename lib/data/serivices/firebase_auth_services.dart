@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
@@ -48,16 +49,11 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    try {
      return  await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-    }catch(e){
-      print('Sign in error: $e');
-      return null;
-    }
-    return null;
+
   }
 
   // ── Email Sign-Up (Register) ──────────────────────────────────────────

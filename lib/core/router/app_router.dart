@@ -1,4 +1,5 @@
 
+import 'package:chatapp/presentation/screens/auth/forgrtten_screen.dart';
 import 'package:chatapp/presentation/screens/auth/home_screen.dart';
 import 'package:chatapp/presentation/screens/splash/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,12 +8,16 @@ import 'package:go_router/go_router.dart';
 
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/signup_screen.dart';
+import '../../presentation/screens/chat/chatscreen.dart';
 
 
 class AppRouter {
   static final GoRouter _router = GoRouter(
     initialLocation: '/splash',
     routes: [
+      GoRoute(path: '/forgot',
+      name: 'forgot',
+        builder: (context, state) => const ForgotPasswordScreen(),),
       GoRoute(
         path: '/login',
         name: 'login',
@@ -31,7 +36,12 @@ class AppRouter {
       ),
       GoRoute(path: '/splash',
       name: 'splash',
-      builder: (context, state) => const SplashScreen(),)
+      builder: (context, state) => const SplashScreen(),),
+      GoRoute (path: '/chats',
+      name: 'chats',
+      builder: (context,state ) =>ChatScreen(roomId: '1',),),
+
+
     ],
     // Optional: Error handling
     errorBuilder: (context, state) => Scaffold(
