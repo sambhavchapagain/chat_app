@@ -118,7 +118,8 @@ class _SignupScreenState extends State<SignupScreen> {
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
                             return 'Name is required';
-                          }},
+                          }
+                          return null;},
 
                       decoration: InputDecoration(
                         hintText:AppStrings.enternameHint,

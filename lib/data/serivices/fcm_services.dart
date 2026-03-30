@@ -8,12 +8,10 @@ class FCMService {
     await _firebaseMessaging.requestPermission();
 
     // Get device token
-    String? token = await _firebaseMessaging.getToken();
-    print("FCM Token: $token");
+    await _firebaseMessaging.getToken();
 
     // Listen for foreground messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("Message received: ${message.notification?.title}");
     });
   }
 }

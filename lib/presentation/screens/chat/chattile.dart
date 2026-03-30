@@ -21,7 +21,7 @@ class ChatTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Row(
           children: [
-            _buildAvatar(isOnline, hasUnread),
+            _buildAvatar(isOnline, hasUnread,),
             const SizedBox(width: 12),
             _buildNameAndMessage(isSender, isAudio, isPhoto),
             _buildTimeAndBadge(hasUnread),
@@ -31,14 +31,18 @@ class ChatTile extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar(bool isOnline, bool hasUnread) {
+  Widget _buildAvatar(bool isOnline, bool hasUnread,) {
+    final String? photoURL = chat['photoURL']?.toString();
     return Stack(
       children: [
         CircleAvatar(
           radius: 28,
           backgroundColor: const Color(0xFFE5E5EA),
+        backgroundImage: photoURL != null && photoURL.isNotEmpty
+            ? NetworkImage(photoURL)
+            : null,
           child: Text(
-            chat['initials'],
+            (chat['initials'] ?? 'I').toString(),  // Safe null handling
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
@@ -71,7 +75,7 @@ class ChatTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            chat['name'],
+            (chat['name'] ?? 'Shambhav').toString(),  // Safe null handling
             style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w600,
@@ -105,7 +109,7 @@ class ChatTile extends StatelessWidget {
               else
                 Expanded(
                   child: Text(
-                    chat['message'],
+                    (chat['message'] ?? '').toString(),  // Safe null handling
                     style: const TextStyle(
                         fontSize: 15, color: Color(0xFF8E8E93)),
                     overflow: TextOverflow.ellipsis,
@@ -123,7 +127,7 @@ class ChatTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
-          chat['time'],
+          (chat['time'] ?? '').toString(),  // Safe null handling
           style: TextStyle(
             fontSize: 13,
             color: hasUnread
@@ -141,7 +145,7 @@ class ChatTile extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Text(
-              '${chat['unread']}',
+              '${chat['unread'] ?? 0}',  // Already safe
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 13,

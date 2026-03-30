@@ -26,7 +26,7 @@ class AppRouter {
       GoRoute(
         path: '/home',
         name: 'home',
-        builder: (context, state) => const HomeScreen(), // Replace with your home
+        builder: (context, state) => const ChatScreen(roomId: 'roomId'), // Replace with your home
       ),
 
       GoRoute(
