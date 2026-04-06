@@ -100,7 +100,7 @@ class ChatTile extends StatelessWidget {
                 ])
               else if (isPhoto)
                 const Row(children: [
-                  Icon(Icons.image, size: 15, color: Color(0xFF007AFF)),
+                  Icon(Icons.image_sharp, size: 15, color: Color(0xFF007AFF)),
                   SizedBox(width: 2),
                   Text('Photo',
                       style: TextStyle(

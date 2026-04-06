@@ -1,8 +1,9 @@
+import 'package:chatapp/core/constants/app_colors.dart';
+import 'package:chatapp/logic/blocs/auth/auth_bloc.dart';
 import 'package:chatapp/presentation/screens/chat/chattile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../logic/blocs/auth/auth_bloc.dart';
 
 class ChatScreen extends StatefulWidget {
   final String roomId;
@@ -33,7 +34,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F7),
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(AuthState()),
       body: Column(
         children: [
           Expanded(child: _buildMessageList()),
@@ -43,32 +44,36 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(state) {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       elevation: 0.5,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios,
-            color: Color(0xFF007AFF), size: 20),
+            color:AppColors.primaryBlue, size: 20),
         onPressed: () => context.pop(),
       ),
       centerTitle: true,
       title: Column(
         children: [
-          const CircleAvatar(
-            radius: 18,
-            backgroundColor: Color(0xFFE5E5EA),
-            child: Text(
-              'I',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF8E8E93),
-              ),
-            ),
-          ),
-          const SizedBox(height: 2),
+      Center(
+      child: ClipRRect(
+          borderRadius: BorderRadiusGeometry.circular(50),
+        child: Image.network("${state.value?.user
+            ?.photoURL}")),
+    ), Center(
+    child: Text("Email: ${state.value?.user?.email}"),
+    ), Center(
+    child: Text(
+    "Name: ${state.value?.user?.displayName}"),
+    ), Center(
+    child: Text(
+    "PhoneNumber: ${state.value?.user
+        ?.phoneNumber}"),
+    ),
+          const SizedBox(height:1),
           const Text(
-            'Imogen',
+            'Chat App',
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
@@ -79,14 +84,14 @@ class _ChatScreenState extends State<ChatScreen> {
             'online',
             style: TextStyle(
               fontSize: 11,
-              color: Color(0xFF34C759),
+              color: AppColors.greenYellow,
             ),
           ),
         ],
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.more_vert, color: Color(0xFF007AFF)),
+          icon: const Icon(Icons.more_vert, color: AppColors.blue),
           onPressed: () {},
         ),
       ],
@@ -112,7 +117,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 return ChatTile(
                   chat: {
                     'initials': 'I',
-                    'name': 'Imogen',
+                    'name': 'shambhav',
                     'message': msg['text'] ?? '',
                     'isSender': msg['isMe'] ?? false,
                     'time': msg['time'] ?? '',
@@ -124,7 +129,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   onTap: () {},
                 );
               },
-            ),
+            ),ElevatedButton(onPressed: () {
+              context.goNamed('login');
+
+            }, child: Text("log out"))
           ],
         );
       },

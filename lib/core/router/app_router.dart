@@ -1,6 +1,7 @@
 
 import 'package:chatapp/presentation/screens/auth/forgrtten_screen.dart';
 import 'package:chatapp/presentation/screens/auth/home_screen.dart';
+import 'package:chatapp/presentation/screens/chat/new_chatscreen.dart';
 import 'package:chatapp/presentation/screens/splash/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,10 +24,13 @@ class AppRouter {
         name: 'login',
         builder: (context, state) => const LoginScreen(),
       ),
+      GoRoute(path: '/newchatscreen',
+      name: 'newchatscreen',
+      builder: (context, state) => const NewChatScreen()),
       GoRoute(
         path: '/home',
         name: 'home',
-        builder: (context, state) => const ChatScreen(roomId: 'roomId'), // Replace with your home
+        builder: (context, state) => const HomeScreen(), // Replace with your home
       ),
 
       GoRoute(

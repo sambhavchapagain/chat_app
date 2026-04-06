@@ -1,5 +1,4 @@
 import 'package:chatapp/core/constants/app_string.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -49,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: BlocListener<AuthBloc, AuthState>(
   listener: (context, state) {
     if(state.authStatus == AuthStatus.authenticated){
-   return   context.goNamed('home');
+   return   context.goNamed('newchatscreen');
 
     }
     if(state.authStatus == AuthStatus.loading){
@@ -119,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                     // regex checks valid email format
                     final emailRegex = RegExp(
-                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                        r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
                     if (!emailRegex.hasMatch(value.trim())) {
                       return 'Enter a valid email address';
                     }
