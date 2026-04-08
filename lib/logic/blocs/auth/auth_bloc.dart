@@ -11,6 +11,7 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthService _authService;
 
+
   AuthBloc(this._authService) : super(const AuthState()) {
     on<GoogleSignInRequested>(_onGoogleSignIn);
     on<EmailSignInRequested>(_onEmailSignIn);

@@ -1,7 +1,7 @@
 
 import 'package:chatapp/presentation/screens/auth/forgrtten_screen.dart';
 import 'package:chatapp/presentation/screens/auth/home_screen.dart';
-import 'package:chatapp/presentation/screens/chat/new_chatscreen.dart';
+import 'package:chatapp/presentation/screens/chat/new_chatscreen.dart' hide NewChatScreen;
 import 'package:chatapp/presentation/screens/splash/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -41,10 +41,10 @@ class AppRouter {
       GoRoute(path: '/splash',
       name: 'splash',
       builder: (context, state) => const SplashScreen(),),
-      GoRoute (path: '/chats',
-      name: 'chats',
-      builder: (context,state ) =>ChatScreen(roomId: '1',),),
-
+      // GoRoute (path: '/chats',
+      // name: 'chats',
+      // builder: (context,state ) =>ChatScreen(roomId: '1',),),
+      //
 
     ],
     // Optional: Error handling
@@ -59,8 +59,8 @@ class AppRouter {
       final isSplash = path == '/splash';
 
 
-      if (isLoggedIn && isAuthPage) return '/home';
-      if (isLoggedIn && isSplash) return '/home';
+      if (isLoggedIn && isAuthPage) return '/newchatscreen';
+      if (isLoggedIn && isSplash) return '/newchatscreen';
 
 
 
